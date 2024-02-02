@@ -27,4 +27,8 @@
   <ItemGroup>
     <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core/" />
+    <Folder Include="Functions/" />
+  </ItemGroup>
 </Project>
