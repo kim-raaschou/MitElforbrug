@@ -13,12 +13,6 @@ public record Adresse(
     string? Etage,
     string? Dør
 );
-// {
-//     public override string ToString() => $"""
-//     {Vejnavn} {Husnummer}{(Etage is not null ? $", {Etage}" : "")}{(Dør is not null ? $", {Dør}" : "")}
-//     {Postnummer} {By} 
-//     """;
-// }
 
 public record ElForbrug(
     DateTime Tidspunkt,     

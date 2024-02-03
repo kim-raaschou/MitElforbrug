@@ -6,12 +6,16 @@ public record EloverblikResult<T>(T Result)
 }
 
 public record EloverblikMeteringpointsResponse(
+    string StreetCode,
     string StreetName,
-    string BuildingNumber,
+    string BuildingNumber, 
+    string FloorId,
+    string RoomId ,
+    string FirstConsumerPartyName,
+    string SecondConsumerPartyName,
+    string BalanceSupplierName,
     string Postcode,
     string CityName,
-    string FloorId,
-    string RoomId,
     string MeteringPointId,
     List<EloverblikChildMeteringPointsResponse> ChildMeteringPoints
 );

@@ -8,7 +8,7 @@ using MitElforbrug.Core;
 namespace MitElforbrug.Infrastructure;
 
 public record Period(
-    PeriodTimeInterval TimeInterval, 
+    PeriodTimeInterval TimeInterval,
     PeriodPoint[] Point
 );
 
@@ -19,32 +19,18 @@ public record PeriodPoint(int Position, decimal Quantity)
     public decimal Quantity { get; } = Quantity;
 }
 
-public class EloverblikAdapter(HttpClient httpClient)
+public class EloverblikHttpClient(HttpClient httpClient)
 {
     private readonly HttpClient httpClient = httpClient;
 
-    public async Task<HovedMålepunkt> HentMålepunkter()
+    public async Task<EloverblikMeteringpointsResponse> HentHovedmålepunkt()
     {
         var requestUri = "api/meteringpoints/meteringpoints?includeAll=true";
         var response = await httpClient.GetFromJsonAsync<EloverblikResult<EloverblikMeteringpointsResponse[]>>(requestUri);
 
-        if (response is null || response.Result.Length == 0) throw new ApplicationException();
-
-        var meteringpointsResponse = response.Result.First();
-        return new HovedMålepunkt(
-            HovedmålepunktId: meteringpointsResponse.MeteringPointId,
-            Adresse: new(
-                Vejnavn: meteringpointsResponse.StreetName,
-                Husnummer: meteringpointsResponse.BuildingNumber,
-                By: meteringpointsResponse.CityName,
-                Postnummer: meteringpointsResponse.Postcode,
-                Etage: meteringpointsResponse.FloorId,
-                Dør: meteringpointsResponse.RoomId
-            ),
-            Undermålepunkter: meteringpointsResponse.ChildMeteringPoints
-                .Select(child => child.MeteringPointId)
-                .ToImmutableArray()
-        );
+        return response?.Result?.Length > 0
+            ? response.Result.Single()
+            : throw new ApplicationException();
     }
 
     public async Task<IEnumerable<ElForbrug>> HentMåleraflæsninger(HentMåleraflæsningerRequest request)
