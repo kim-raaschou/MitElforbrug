@@ -6,8 +6,13 @@ public static class InfrastructureConfiguration
 {
     public static IServiceCollection ConfigureEloverblikHttpClient(this IServiceCollection services)
     {
-        var eloverblikBaseAddress = new Uri("https://api.eloverblik.dk/customerapi/api");
 
+        services.AddHttpClient<EnerginetHttpClient>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.energidataservice.dk");
+        });
+
+        var eloverblikBaseAddress = new Uri("https://api.eloverblik.dk/customerapi/api");
         services
             .AddHttpClient<EloverblikHttpClient>(
                 client => client.BaseAddress = eloverblikBaseAddress)
