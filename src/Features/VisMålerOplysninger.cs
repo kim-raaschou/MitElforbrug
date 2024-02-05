@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using MitElforbrug.Infrastructure;
 using static System.String;
 
-namespace MitElforbrug.Core.UseCases;
+namespace MitElforbrug.Core.Features;
 
 public record VisMålerOplysningerResponse(
     string HovedmålepunktId,
@@ -9,6 +12,14 @@ public record VisMålerOplysningerResponse(
     string Leverandør,
     IEnumerable<string> Undermålepunkter
 );
+
+public class VisMålerOplysninger(VisMålerOplysningerHandler visMålerOplysningerHandler)
+{
+    private readonly VisMålerOplysningerHandler _visMålerOplysningerHandler = visMålerOplysningerHandler;
+    [Function("VisMaaleroplysninger")]
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req) 
+        => new OkObjectResult(await _visMålerOplysningerHandler.Handle());
+}
 
 public class VisMålerOplysningerHandler(EloverblikHttpClient httpClient)
 {
@@ -27,7 +38,8 @@ public class VisMålerOplysningerHandler(EloverblikHttpClient httpClient)
     }
 }
 
-file static class EloverblikMeteringpointsResponseExtension{
+file static class EloverblikMeteringpointsResponseExtension
+{
     public static string FormaterAdresse(this EloverblikMeteringpointsResponse response)
         => $"""
             {FormaterKundenavne(response)}
@@ -39,4 +51,4 @@ file static class EloverblikMeteringpointsResponseExtension{
         => IsNullOrEmpty(response.SecondConsumerPartyName)
             ? response.FirstConsumerPartyName
             : $"{response.FirstConsumerPartyName} og {response.SecondConsumerPartyName}";
-} 
+}

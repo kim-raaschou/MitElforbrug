@@ -18,3 +18,11 @@ public record ElForbrug(
     DateTime Tidspunkt,     
     decimal ForbrugKwh
 );
+
+
+
+// public interface IMitEloverblik
+// {
+//     Task<HovedMålepunkt> HentMålepunkter();
+//     Task<IEnumerable<ElForbrug>> HentMåleraflæsninger(HentMåleraflæsningerRequest request);
+// }

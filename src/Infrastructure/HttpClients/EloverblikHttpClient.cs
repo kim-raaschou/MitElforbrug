@@ -1,22 +1,15 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using MinEltavle.Core.Domain;
-using MitElforbrug.Core;
 
 namespace MitElforbrug.Infrastructure;
 
-public record Period(
-    PeriodTimeInterval TimeInterval,
-    PeriodPoint[] Point
+public record HentMåleraflæsningerRequest(
+    DateOnly FraDato, 
+    DateOnly TilDato, 
+    string[] Målepunkter
 );
 
-public record PeriodTimeInterval(DateTime Start);
-public record PeriodPoint(int Position, decimal Quantity)
-{
-    [JsonPropertyName("out_Quantity.quantity")]
-    public decimal Quantity { get; } = Quantity;
-}
 
 public class EloverblikHttpClient(HttpClient httpClient)
 {

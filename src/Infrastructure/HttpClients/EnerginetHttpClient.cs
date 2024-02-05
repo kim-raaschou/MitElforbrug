@@ -9,6 +9,12 @@ public record EnerginetElsporprisRequest(DateOnly Start, DateOnly End, string Pr
 
 public record EnerginetElsporprisRecordResponse(EnerginetElsporprisResponse[] Records);
 
+/// <summary>
+/// SpotPriceDKK er prisen pr MWh. Divider med 1000 for KWh 
+/// </summary>
+/// <see cref="https://www.energidataservice.dk/tso-electricity/Elspotprices#metadata-info"/>
+/// <param name="HourUTC"></param>
+/// <param name="SpotPriceDKK"></param>
 public record EnerginetElsporprisResponse(
     DateTime HourUTC,
     decimal SpotPriceDKK

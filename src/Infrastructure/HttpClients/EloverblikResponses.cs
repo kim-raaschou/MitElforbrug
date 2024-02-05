@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace MitElforbrug.Infrastructure;
 
 public record EloverblikResult<T>(T Result)
@@ -21,3 +23,15 @@ public record EloverblikMeteringpointsResponse(
 );
 
 public record EloverblikChildMeteringPointsResponse(string MeteringPointId);
+
+public record Period(
+    PeriodTimeInterval TimeInterval,
+    PeriodPoint[] Point
+);
+
+public record PeriodTimeInterval(DateTime Start);
+public record PeriodPoint(int Position, decimal Quantity)
+{
+    [JsonPropertyName("out_Quantity.quantity")]
+    public decimal Quantity { get; } = Quantity;
+}
