@@ -2,7 +2,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using MitElforbrug.Infrastructure;
-using MitElforbrug.Core.Features;
+using MitElforbrug.Features;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
@@ -12,6 +12,7 @@ var host = new HostBuilder()
         
         services.ConfigureEloverblikHttpClient();
         services.AddScoped<VisMålerOplysningerHandler>();
+        services.AddScoped<VisElforbrugOgSpotpriserHandler>();
     })
     .Build();
 

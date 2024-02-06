@@ -5,14 +5,14 @@ using MinEltavle.Core.Domain;
 namespace MitElforbrug.Infrastructure;
 
 public record HentMåleraflæsningerRequest(
-    DateOnly FraDato, 
-    DateOnly TilDato, 
+    DateOnly FraDato,
+    DateOnly TilDato,
     string[] Målepunkter
 );
 
-
 public class EloverblikHttpClient(HttpClient httpClient)
 {
+    private static readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
     private readonly HttpClient httpClient = httpClient;
 
     public async Task<EloverblikMeteringpointsResponse> HentHovedmålepunkt()
@@ -28,36 +28,38 @@ public class EloverblikHttpClient(HttpClient httpClient)
     public async Task<IEnumerable<ElForbrug>> HentMåleraflæsninger(HentMåleraflæsningerRequest request)
     {
         var response = await httpClient.PostAsync(
-            requestUri: $"api/meterdata/gettimeseries/{request.FraDato:yyyy-MM-dd}/{request.TilDato:yyyy-MM-dd}/Day",
+            requestUri: $"api/meterdata/gettimeseries/{request.FraDato:yyyy-MM-dd}/{request.TilDato:yyyy-MM-dd}/Hour",
             content: JsonContent.Create(new
             {
-                MeteringPoints = new
-                {
-                    MeteringPoint = request.Målepunkter.ToArray()
-                }
-            }));
+                MeteringPoints = new { MeteringPoint = request.Målepunkter.ToArray() }
+            })
+        );
 
         response.EnsureSuccessStatusCode();
 
         var node = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        return ExtractPeriodNodes(node).SelectMany(periodNode =>
+        {
+            var period = JsonSerializer.Deserialize<Period>(
+                json: periodNode.GetRawText(),
+                options: serializerOptions
+            );
 
-        if (node is null) throw new ApplicationException();
-
-        return node.RootElement.GetProperty("result")[0]
-            .GetProperty("MyEnergyData_MarketDocument")
-            .GetProperty("TimeSeries")[0]
-            .GetProperty("Period")
-            .EnumerateArray()
-            .Select(periodNode =>
+            return period!.Point.Select(point =>
             {
-                var period = JsonSerializer.Deserialize<Period>(
-                    json: periodNode.GetRawText(),
-                    options: new JsonSerializerOptions(JsonSerializerDefaults.Web)
-                );
-
                 return new ElForbrug(
-                    Tidspunkt: period!.TimeInterval.Start.AddHours(period.Point[0].Position),
-                    ForbrugKwh: period.Point[0].Quantity);
+                    Tidspunkt: period!.TimeInterval.Start.AddHours(point.Position),
+                    ForbrugKwh: point.Quantity);
             });
+        });
     }
+
+    private static JsonElement.ArrayEnumerator ExtractPeriodNodes(JsonDocument node)
+        => node is null
+            ? throw new ApplicationException()
+            : node.RootElement.GetProperty("result")[0]
+                .GetProperty("MyEnergyData_MarketDocument")
+                .GetProperty("TimeSeries")[0]
+                .GetProperty("Period")
+                .EnumerateArray();
 }

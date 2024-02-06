@@ -4,7 +4,7 @@ using Microsoft.Azure.Functions.Worker;
 using MitElforbrug.Infrastructure;
 using static System.String;
 
-namespace MitElforbrug.Core.Features;
+namespace MitElforbrug.Features;
 
 public record VisMålerOplysningerResponse(
     string HovedmålepunktId,
@@ -13,18 +13,15 @@ public record VisMålerOplysningerResponse(
     IEnumerable<string> Undermålepunkter
 );
 
-public class VisMålerOplysninger(VisMålerOplysningerHandler visMålerOplysningerHandler)
+public record VisMålerOplysningerFunction(VisMålerOplysningerHandler Handler)
 {
-    private readonly VisMålerOplysningerHandler _visMålerOplysningerHandler = visMålerOplysningerHandler;
     [Function("VisMaaleroplysninger")]
-    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req) 
-        => new OkObjectResult(await _visMålerOplysningerHandler.Handle());
+    public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest req)
+        => new OkObjectResult(await Handler.Handle());
 }
 
-public class VisMålerOplysningerHandler(EloverblikHttpClient httpClient)
+public record VisMålerOplysningerHandler(EloverblikHttpClient HttpClient)
 {
-    private EloverblikHttpClient HttpClient { get; } = httpClient;
-
     public async Task<VisMålerOplysningerResponse> Handle()
     {
         EloverblikMeteringpointsResponse response = await HttpClient.HentHovedmålepunkt();
