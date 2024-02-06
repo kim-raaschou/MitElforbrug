@@ -8,6 +8,12 @@ public class EloverblikHttpClientBaseAddress: Uri {
     public EloverblikHttpClientBaseAddress() : base(uri){ }
 }
 
+/// <summary>
+/// Find informationer om energinet her: https://energinet.dk/data-om-energi/datahub/
+/// Swagger api: https://api.eloverblik.dk/customerapi/index.html. Her findes også info omkring login
+/// og oprettelse af access token. Kræver NemId login.
+/// </summary>
+/// <param name="httpClient"></param>
 public class EloverblikHttpClient(HttpClient httpClient)
 {
     private static readonly JsonSerializerOptions serializerOptions = new(JsonSerializerDefaults.Web);
