@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using MinEltavle.Core.Domain;
 using MitElforbrug.Infrastructure;
 using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
 
 namespace MitElforbrug.Features;
 
 public record VisElforbrugOgSpotpriserFunction(VisElforbrugOgSpotpriserHandler Handler)
-{    
+{
     [Function("VisElforbrugOgSpotpriser")]
     public async Task<IActionResult> Run(
         [HttpTrigger(authLevel: AuthorizationLevel.Anonymous, methods: "post")] HttpRequest req,
@@ -24,34 +23,36 @@ public record VisElforbrugOgSpotpriserRequest(
 
 public record VisElforbrugOgSpotpriserResponse(
     EnerginetElsporprisResponse[] Elsporpriser,
-    ElForbrug[] Elforbrug
+    MåleraflæsningResponse[] Elforbrug
 );
 
 public record VisElforbrugOgSpotpriserHandler(
-    EloverblikHttpClient EloverblikHttpClient, 
+    EloverblikHttpClient EloverblikHttpClient,
     EnerginetHttpClient EnerginetHttpClient
 )
 {
     public async Task<VisElforbrugOgSpotpriserResponse> Handle(VisElforbrugOgSpotpriserRequest request)
     {
-        var elspotpriserTask = EnerginetHttpClient.HentHistoriskeElspotpriser(new EnerginetElsporprisRequest(
-            Start: request.Start,
-            End: request.End,
-            PriceArea: "DK1"
-        ));
+        var elspotpriserTask = EnerginetHttpClient.HentHistoriskeElspotpriser(
+            request: new EnerginetElsporprisRequest(
+                Start: request.Start,
+                End: request.End,
+                PriceArea: "DK1")
+        );
 
-        var elforbrugTask = EloverblikHttpClient.HentMåleraflæsninger(new HentMåleraflæsningerRequest(
-            FraDato: request.Start,
-            TilDato: request.End,
-            Målepunkter: request.Målepunkter
-        ));
+        var elforbrugTask = EloverblikHttpClient.HentMåleraflæsninger(
+            request : new HentMåleraflæsningerRequest(
+                FraDato: request.Start,
+                TilDato: request.End,
+                Målepunkter: request.Målepunkter)
+        );
 
         Task.WaitAll(elspotpriserTask, elforbrugTask);
         var (elspotpriser, elforbrug) = (await elspotpriserTask, await elforbrugTask);
 
         return new VisElforbrugOgSpotpriserResponse(
-            Elsporpriser: elspotpriser.ToArray(),
-            Elforbrug: elforbrug.ToArray()
+            Elsporpriser: [.. elspotpriser],
+            Elforbrug: [.. elforbrug.Måleraflæsninger]
         );
     }
 }

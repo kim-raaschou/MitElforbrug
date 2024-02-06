@@ -9,11 +9,19 @@ public record HentMåleraflæsningerRequest(
     string[] Målepunkter
 );
 
-public record ElForbrug(
+public record HentMåleraflæsningerResponse(
+    MåleraflæsningResponse[] Måleraflæsninger
+);
+
+public record MåleraflæsningResponse(
     DateTime Tidspunkt,     
     decimal ForbrugKwh
 );
 
+public class EloverblikHttpClientBaseAddress: Uri {
+    private const string uri = "https://api.eloverblik.dk/customerapi/api";  
+    public EloverblikHttpClientBaseAddress() : base(uri){ }
+}
 
 public class EloverblikHttpClient(HttpClient httpClient)
 {
@@ -22,18 +30,20 @@ public class EloverblikHttpClient(HttpClient httpClient)
 
     public async Task<EloverblikMeteringpointsResponse> HentHovedmålepunkt()
     {
-        var requestUri = "api/meteringpoints/meteringpoints?includeAll=true";
-        var response = await httpClient.GetFromJsonAsync<EloverblikResult<EloverblikMeteringpointsResponse[]>>(requestUri);
+        var response = await httpClient.GetFromJsonAsync<EloverblikResult<EloverblikMeteringpointsResponse[]>>(
+            requestUri: "api/meteringpoints/meteringpoints?includeAll=true"
+        );
 
         return response?.Result?.Length > 0
             ? response.Result.Single()
             : throw new ApplicationException();
     }
 
-    public async Task<IEnumerable<ElForbrug>> HentMåleraflæsninger(HentMåleraflæsningerRequest request)
+    public async Task<HentMåleraflæsningerResponse> HentMåleraflæsninger(HentMåleraflæsningerRequest request)
     {
+        var (fraDato, tilDato, _) = request;
         var response = await httpClient.PostAsync(
-            requestUri: $"api/meterdata/gettimeseries/{request.FraDato:yyyy-MM-dd}/{request.TilDato:yyyy-MM-dd}/Hour",
+            requestUri: $"api/meterdata/gettimeseries/{fraDato:yyyy-MM-dd}/{tilDato:yyyy-MM-dd}/Hour",
             content: JsonContent.Create(new
             {
                 MeteringPoints = new { MeteringPoint = request.Målepunkter.ToArray() }
@@ -43,20 +53,22 @@ public class EloverblikHttpClient(HttpClient httpClient)
         response.EnsureSuccessStatusCode();
 
         var node = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
-        return ExtractPeriodNodes(node).SelectMany(periodNode =>
+        var måleraflæsninger = ExtractPeriodNodes(node).SelectMany(periodNode =>
         {
             var period = JsonSerializer.Deserialize<Period>(
-                json: periodNode.GetRawText(),
+                json: periodNode.GetRawText(), 
                 options: serializerOptions
             );
 
             return period!.Point.Select(point =>
             {
-                return new ElForbrug(
+                return new MåleraflæsningResponse(
                     Tidspunkt: period!.TimeInterval.Start.AddHours(point.Position),
                     ForbrugKwh: point.Quantity);
             });
         });
+
+        return new HentMåleraflæsningerResponse(Måleraflæsninger: måleraflæsninger.ToArray());
     }
 
     private static JsonElement.ArrayEnumerator ExtractPeriodNodes(JsonDocument node)

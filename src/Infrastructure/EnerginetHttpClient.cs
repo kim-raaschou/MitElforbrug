@@ -20,6 +20,12 @@ public record EnerginetElsporprisResponse(
     decimal SpotPriceDKK
 );
 
+public class EnerginetHttpClientBaseAddress : Uri
+{
+    private const string uri = "https://api.energidataservice.dk";
+    public EnerginetHttpClientBaseAddress() : base(uri) { }
+}
+
 public class EnerginetHttpClient(HttpClient httpClient)
 {
     private readonly HttpClient httpClient = httpClient;
@@ -51,6 +57,6 @@ public class EnerginetHttpClient(HttpClient httpClient)
         return await formUrlEncodedContent.ReadAsStringAsync();
     }
 
-    private static EnerginetElsporprisResponse SportPrisMedPrisIKWh(EnerginetElsporprisResponse spotpris) 
+    private static EnerginetElsporprisResponse SportPrisMedPrisIKWh(EnerginetElsporprisResponse spotpris)
         => spotpris with { SpotPriceDKK = spotpris.SpotPriceDKK / 1000 };
 }

@@ -7,7 +7,7 @@ using MitElforbrug;
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices((Action<IServiceCollection>)(services =>
+    .ConfigureServices(services =>
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
@@ -18,26 +18,17 @@ var host = new HostBuilder()
 
         services.AddHttpClient<EnerginetHttpClient>(client =>
         {
-            client.BaseAddress = new Uri("https://api.energidataservice.dk");
+            client.BaseAddress = new EnerginetHttpClientBaseAddress();
         });
 
-        AddEloverblikHttpClient(services);
+        services.AddSingleton<EloverblikHttpClientBaseAddress>();
+        services.AddScoped<EloverblikJwtTokenHandler>();
+        services.AddHttpClient<EloverblikHttpClient>(client =>
+        {
+            client.BaseAddress = new EloverblikHttpClientBaseAddress();
+        }).AddHttpMessageHandler<EloverblikJwtTokenHandler>();
 
-    }))
+    })
     .Build();
 
 host.Run();
-
-static void AddEloverblikHttpClient(IServiceCollection services)
-{
-    var eloverblikBaseAddress = new Uri("https://api.eloverblik.dk/customerapi/api");
-    services
-        .AddHttpClient<EloverblikHttpClient>(
-            client => client.BaseAddress = eloverblikBaseAddress)
-        .AddHttpMessageHandler(
-            services => new EloverblikJwtTokenHandler(
-                timeProvider: services.GetRequiredService<TimeProvider>(),
-                baseAddress: eloverblikBaseAddress
-            )
-        );
-}
