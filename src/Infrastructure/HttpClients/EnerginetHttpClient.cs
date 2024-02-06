@@ -34,7 +34,7 @@ public class EnerginetHttpClient(HttpClient httpClient)
 
         return response is null || response.Records.Length < 1
             ? throw new ApplicationException()
-            : response.Records;
+            : response.Records.Select(SportPrisMedPrisIKWh);
     }
 
     private static async Task<string> CreateQueryParams(EnerginetElsporprisRequest request)
@@ -50,4 +50,7 @@ public class EnerginetHttpClient(HttpClient httpClient)
 
         return await formUrlEncodedContent.ReadAsStringAsync();
     }
+
+    private static EnerginetElsporprisResponse SportPrisMedPrisIKWh(EnerginetElsporprisResponse spotpris) 
+        => spotpris with { SpotPriceDKK = spotpris.SpotPriceDKK / 1000 };
 }

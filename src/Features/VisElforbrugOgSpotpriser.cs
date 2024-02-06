@@ -21,6 +21,7 @@ public record VisElforbrugOgSpotpriserRequest(
     DateOnly End,
     string[] Målepunkter
 );
+
 public record VisElforbrugOgSpotpriserResponse(
     EnerginetElsporprisResponse[] Elsporpriser,
     ElForbrug[] Elforbrug
@@ -49,11 +50,8 @@ public record VisElforbrugOgSpotpriserHandler(
         var (elspotpriser, elforbrug) = (await elspotpriserTask, await elforbrugTask);
 
         return new VisElforbrugOgSpotpriserResponse(
-            Elsporpriser: elspotpriser.Select(SportPrisMedPrisIKWh).ToArray(),
+            Elsporpriser: elspotpriser.ToArray(),
             Elforbrug: elforbrug.ToArray()
         );
     }
-
-    private static EnerginetElsporprisResponse SportPrisMedPrisIKWh(EnerginetElsporprisResponse spotpris) 
-        => spotpris with { SpotPriceDKK = spotpris.SpotPriceDKK / 1000 };
 }
