@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using System.Text.Json;
-using MinEltavle.Core.Domain;
 
 namespace MitElforbrug.Infrastructure;
 
@@ -9,6 +8,12 @@ public record HentMåleraflæsningerRequest(
     DateOnly TilDato,
     string[] Målepunkter
 );
+
+public record ElForbrug(
+    DateTime Tidspunkt,     
+    decimal ForbrugKwh
+);
+
 
 public class EloverblikHttpClient(HttpClient httpClient)
 {
