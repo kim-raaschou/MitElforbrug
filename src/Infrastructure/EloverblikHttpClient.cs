@@ -3,21 +3,6 @@ using System.Text.Json;
 
 namespace MitElforbrug.Infrastructure;
 
-public record HentMåleraflæsningerRequest(
-    DateOnly FraDato,
-    DateOnly TilDato,
-    string[] Målepunkter
-);
-
-public record HentMåleraflæsningerResponse(
-    MåleraflæsningResponse[] Måleraflæsninger
-);
-
-public record MåleraflæsningResponse(
-    DateTime Tidspunkt,     
-    decimal ForbrugKwh
-);
-
 public class EloverblikHttpClientBaseAddress: Uri {
     private const string uri = "https://api.eloverblik.dk/customerapi/api";  
     public EloverblikHttpClientBaseAddress() : base(uri){ }
@@ -62,7 +47,7 @@ public class EloverblikHttpClient(HttpClient httpClient)
 
             return period!.Point.Select(point =>
             {
-                return new MåleraflæsningResponse(
+                return new Måleraflæsning(
                     Tidspunkt: period!.TimeInterval.Start.AddHours(point.Position),
                     ForbrugKwh: point.Quantity);
             });

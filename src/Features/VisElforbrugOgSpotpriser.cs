@@ -23,7 +23,7 @@ public record VisElforbrugOgSpotpriserRequest(
 
 public record VisElforbrugOgSpotpriserResponse(
     EnerginetElsporprisResponse[] Elsporpriser,
-    MåleraflæsningResponse[] Elforbrug
+    Måleraflæsning[] Elforbrug
 );
 
 public record VisElforbrugOgSpotpriserHandler(
