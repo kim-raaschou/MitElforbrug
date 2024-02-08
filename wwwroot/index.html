@@ -72,9 +72,7 @@
                 <script>
                     window.addEventListener('load', async function loadMåleroplysninger() {
 
-                        const response = await fetch("api/VisMaaleroplysninger", { 
-                            credentials: "same-origin", 
-                        });
+                        const response = await fetch("api/VisMaaleroplysninger");
                         const movies = await response.json();
                         console.log(movies);
                     });

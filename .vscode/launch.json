@@ -2,6 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "command": "npx swa start",
+            "name": "Serve static website wwwroot",
+            "request": "launch",
+            "type": "node-terminal",
+            "cwd": "${workspaceFolder}/wwwroot"
+        },
+        {
             "name": "Attach to .NET Functions",
             "type": "coreclr",
             "request": "attach",
