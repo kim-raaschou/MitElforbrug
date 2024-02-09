@@ -13,9 +13,6 @@
             display: none;
         }
     </style>
-
-    <script src="https://unpkg.com/@carbon/charts@latest/dist/umd/bundle.umd.js"></script>
-
     <!-- Load required stylesheets -->
     <link href="https://unpkg.com/@carbon/styles@latest/css/styles.css" rel="stylesheet" crossorigin="anonymous" />
     <link href="https://unpkg.com/@carbon/charts@latest/dist/styles.css" rel="stylesheet" crossorigin="anonymous" />
@@ -24,6 +21,7 @@
     <link
         href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans+Condensed:300,400|IBM+Plex+Sans:400,600&display=swap"
         rel="stylesheet" crossorigin="anonymous" />
+
     <script type="module"
         src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/ui-shell.min.js"></script>
     <script type="module"
@@ -31,8 +29,7 @@
     <script type="module" src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/tile.min.js"></script>
     <script type="module"
         src="https://1.www.s81c.com/common/carbon/web-components/tag/v2/latest/date-picker.min.js"></script>
-
-
+    <script src="https://unpkg.com/@carbon/charts@latest/dist/umd/bundle.umd.js"></script>
 </head>
 
 <body>
@@ -40,100 +37,131 @@
         <cds-header-name href="javascript:void 0" prefix="Mit">Elforbrug</cds-header-name>
     </cds-header>
     <main style="margin: 60px 30px;">
-        <div class="cds--grid">
-            <div class="cds--row">
-                <div class="cds--col">
-                    <cds-date-picker>
-                        <cds-date-picker-input kind="from" label-text="Fra dato" placeholder="mm/dd/yyyy">
-                        </cds-date-picker-input>
-                        <cds-date-picker-input kind="to" label-text="Til dato" placeholder="mm/dd/yyyy">
-                        </cds-date-picker-input>
-                    </cds-date-picker>
-                </div>
-                <div class="cds--col">
-                    <cds-multi-select title-text="Vælg målerpunkt" helper-text="">
-                        <cds-multi-select-item value="foo">Foo</cds-multi-select-item>
-                        <cds-multi-select-item value="bar">Bar</cds-multi-select-item>
-                        <cds-multi-select-item value="baz">Baz</cds-multi-select-item>
-                    </cds-multi-select>
-                </div>
-                <div class="cds--col" style="padding-top: 20px;">
-                    <cds-button kind="secondary" type="button">Secondary button</cds-button>
-                </div>
+        <div class="cds--css-grid">
+            <div class="cds--css-grid-column cds--sm:col-span-4">
+                <cds-date-picker>
+                    <cds-date-picker-input type="date" kind="from" defaultPattern="yyyy/MM/yy" id="fradato"
+                        label-text="Fra dato" placeholder="mm/dd/yyyy">
+                    </cds-date-picker-input>
+                    <cds-date-picker-input kind="to" id="tildato" label-text="Til dato" placeholder="mm/dd/yyyy">
+                    </cds-date-picker-input>
+                </cds-date-picker>
+            </div>
+            <div class="cds--css-grid-column cds--sm:col-span-4">
+                <cds-multi-select size="md" id="målepunkter" title-text="Vælg målerpunkt">
+                </cds-multi-select>
+            </div>
+            <div class="cds--css-grid-column cds--sm:col-span-4">
+                <cds-button size="lg" type="button" id="btn" style="padding-top: 20px;">
+                    Indlæs målerdata
+                </cds-button>
+            </div>
+            <div class="cds--css-grid-column cds--sm:col-span-4">
+                <cds-tile id="kundeoplysninger"></cds-tile>
             </div>
         </div>
 
+        <div id="my-bar-chart"></div>
 
-        <div class="cds--row">
-            <div class="cds--col">
+        <script>
 
-                <div id="my-bar-chart"></div>
+            document.getElementById('btn').addEventListener('click', async () => {
 
-                <script>
-                    window.addEventListener('load', async function loadMåleroplysninger() {
+                const tilDatofn = (d) => {
+                    const s = d.split('/');
+                    return `${s[2]}-${s[0]}-${s[1]}`;
+                }
 
-                        const response = await fetch("api/VisMaaleroplysninger");
-                        const movies = await response.json();
-                        console.log(movies);
+                var start = document.getElementById('fradato').value;
+                var end = document.getElementById('tildato').value;
+                var målepunkter = document.getElementById('målepunkter').value.split(',');
+
+                const response = await fetch("api/VisElforbrugOgSpotpriser", {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json", },
+                    body: JSON.stringify({
+                        start: tilDatofn(start), end:
+                            tilDatofn(end), målepunkter
+                    })
+                });
+
+                const { elsporpriser, elforbrug } = await response.json();
+                const options = {
+                    title: `Elforbrug : ${start}-${end}`,
+                    axes: {
+                        left: {
+                            stacked: true,
+                            scaleType: 'linear',
+                            mapsTo: 'value',
+                            title: 'Forbrug i Kwh.',
+                            correspondingDatasets: ['elforbrug'],
+                            domain: [0, 5],
+                        },
+                        bottom: {
+                            scaleType: 'time',
+                            mapsTo: 'date'
+                        },
+                    },
+                    timeScale: {
+                        timeIntervalFormats: {
+                            hourly: {
+                                primary: 'MMM d, HH:mm',
+                                secondary: 'HH:mm'
+                            }
+                        }
+                    },
+                    experimental: true,
+                    zoomBar: {
+                        top: { enabled: true }
+                    },
+                    curve: 'curveMonotoneX',
+                    height: '400px',
+                };
+                const data = [
+                    ...elforbrug.map(elforbrug => ({
+                        date: new Date(elforbrug.tidspunkt),
+                        value: elforbrug.forbrugKwh,
+                        group: 'elforbrug'
+                    })),
+                    ...elsporpriser.map(spotpris => ({
+                        date: new Date(spotpris.hourUTC),
+                        value: spotpris.spotPriceDKK,
+                        group: 'spotpris'
+                    }))
+                ];
+
+                new Charts.AreaChart(
+                    document.getElementById('my-bar-chart'),
+                    {
+                        data,
+                        options
                     });
+            });
 
-                    document.addEventListener('DOMContentLoaded', function () {
-                        // Get reference to chart holder DOM element
-                        const chartHolder = document.getElementById('my-bar-chart');
+            document.addEventListener('DOMContentLoaded', async function () {
 
-                        const data = [
-                            {
-                                group: 'Qty',
-                                value: 65000,
-                            },
-                            {
-                                group: 'More',
-                                value: 29123,
-                            },
-                            {
-                                group: 'Sold',
-                                value: 35213,
-                            },
-                            {
-                                group: 'Restocking',
-                                value: 51213,
-                            },
-                            {
-                                group: 'Misc',
-                                value: 16932,
-                            },
-                        ];
+                const response = await fetch("api/VisMaaleroplysninger");
+                const måleroplysninger = await response.json();
 
-                        const options = {
-                            title: 'Vertical simple bar (discrete)',
-                            axes: {
-                                left: {
-                                    mapsTo: 'value',
-                                },
-                                bottom: {
-                                    mapsTo: 'group',
-                                    scaleType: 'labels',
-                                },
-                            },
-                            height: '400px',
-                        };
+                document.getElementById('kundeoplysninger').innerText = måleroplysninger.kundeoplysninger;
 
-                        console.log(Charts);
+                var item = document.createElement('cds-multi-select-item');
+                item.setAttribute('selected', true)
+                item.setAttribute('value', måleroplysninger.hovedmålepunktId);
+                item.innerText = `Hovedmålerpunkt: ${måleroplysninger.hovedmålepunktId}`;
+                document.getElementById('målepunkter').setAttribute('value', måleroplysninger.hovedmålepunktId);
+                document.getElementById('målepunkter').appendChild(item);
 
-                        new Charts.SimpleBarChart(chartHolder, {
-                            data,
-                            options,
-                        });
-                    });
-                </script>
-            </div>
-        </div>
+                for (var målerpunkt of måleroplysninger.undermålepunkter) {
 
-        </div>
+                    var item = document.createElement('cds-multi-select-item');
+                    item.setAttribute('value', målerpunkt);
+                    item.innerText = `Undermålerpunkt: ${målerpunkt}`;
+                    document.getElementById('målepunkter').appendChild(item);
+                }
+            });
+        </script>
     </main>
-
-    <footer>
-    </footer>
 </body>
 
 </html>
