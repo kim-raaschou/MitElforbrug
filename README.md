@@ -1,7 +1,7 @@
 # MitElforbrug
 # SmartLearning : Disposition Cloud
 
-##Optimering af elforbrug
+## Optimering af elforbrug
 
 Jeg har længe haft fokus på vores elforbrug i hjemmet, og på hvordan vi eventuelt kan optimere vores forbrug af el hen over døgnets 24 timer. Dette er ikke blevet mindre relevant efter vi har fået elbil og vores elforbrug derfor er steget betragteligt. 
 
