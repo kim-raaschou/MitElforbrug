@@ -24,7 +24,7 @@ Min valgte løsning tager form af Azure Functions (.Net 8.0/C#), og en statisk w
 
 Produktet udvikles som en Proof of Concept (POC), og det vil danne grundlag for diskussioner om sikkerhed, dataopbevaring, performance og andre relevante emner under den mundtlige eksamination.
 
-** Det endelige produkt kan findes her: https://blue-beach-0e39cba03.4.azurestaticapps.net **
+**Det endelige produkt kan findes her: https://blue-beach-0e39cba03.4.azurestaticapps.net**
 
 ### Literaturliste
 1. https://energinet.dk/data-om-energi/datahub
