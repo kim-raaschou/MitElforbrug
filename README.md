@@ -1,5 +1,5 @@
 # SmartLearning Cloud  
-### Eksamensopgave: POC Visualisering af Mit Elforbrug 
+### POC Visualisering af Mit Elforbrug 
 
 Velkommen til min disposition for faget Cloud på SmartLearning. Jeg håber, du finder emnet interessant og implementeringen god. 
 
