@@ -1,7 +1,7 @@
 # SmartLearning Cloud: POC Visualisering af Mit Elforbrug
 
 ## Indledning
-Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet, især efter vi har anskafet os en elbil, hvilket har resulteret i en markant stigning i vores elforbrug.
+Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet. Især efter, at vi har anskafet os en elbil, har vores daglige elforbrug ændret sig, og der kan være et potentiale i at have et overordnet overblik over vores forbrug og forbrugsmønstre.
 
 ## Problemformulering
 I forbindelse med min eksamensopgave inden for Cloud-faget har jeg besluttet mig for at udvikle en serverløs applikationc i Azure, med det formål at indsamle og præsentere data om mit elforbrug. 
@@ -12,7 +12,7 @@ Jeg vil forsøge at skabe en visualisering af mit elforbrug i forhold til spotpr
 Projektets teoretiske grundlag bygger på netværksteori og anvendelsen af serverless functions i Azure.
 
 ### Netværksteori:
-OSI-modellen udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTPS-protokollen på applikationslaget muliggøres sikker kommunikation mellem applikationen og de eksterne API'er. Dette, i kombination med datalink- og transportlagene, der benytter Ethernet og TCP/IP-protokollen og dermed sikrer en pålidelig datatransmission.
+OSI-modellen udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTPS-protokollen på applikationslaget muliggøres sikker kommunikation mellem applikationen og de eksterne API'er. Yderligere sikres pålidelig datatransmission mellem server og klienter ved brug af Ethernet og TCP/IP-protokollen på henholdsvis datalink- og transportlagene.
 
 ### Serverless Functions i Azure:
 Valget af serverless functions i Azure, specifikt Azure Functions (.Net 8.0/C#), baserer sig på deres evne til at levere individuelle funktioner uden behov for permanent infrastruktur. Dette giver mulighed for at skabe en skalerbar og især omkostningseffektiv løsning.
