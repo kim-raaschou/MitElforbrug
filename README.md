@@ -3,7 +3,7 @@
 Velkommen til min disposition for faget Cloud på SmartLearning. Jeg håber du finder emnet intressant og implementeringen god.
 
 ## Indledning
-Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet. Især efter, at vi har anskafet os en elbil, har vores daglige elforbrug ændret sig, og der kan være et potentiale i, at have et overordnet overblik over vores forbrug og forbrugsmønstre.
+Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet. Især efter at vi har anskafet os en elbil, har vores daglige elforbrug ændret sig, og der kan være et potentiale i at have et overordnet overblik over vores forbrug og forbrugsmønstre.
 
 ## Problemformulering
 I forbindelse med min eksamensopgave inden for Cloud-faget har jeg besluttet mig for at udvikle en serverløs applikationc i Azure med det formål at indsamle og præsentere data om mit elforbrug. 
