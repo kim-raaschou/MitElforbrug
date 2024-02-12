@@ -12,7 +12,7 @@ Jeg vil forsøge at skabe en visualisering af mit elforbrug i forhold til spotpr
 Projektets teoretiske grundlag bygger på netværksteori og anvendelsen af serverless functions i Azure.
 
 ### Netværksteori:
-OSI-modellen udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTP/HTTPS-protokollen på applikationslaget muliggøres effektiv kommunikation mellem applikationen og de eksterne API'er. Dette, i kombination med datalink- og transportlagene, der udnytter Ethernet og TCP-protokollen og dermed sikrer pålidelig og sikker datatransmission.
+OSI-modellen udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTPS-protokollen på applikationslaget muliggøres sikker kommunikation mellem applikationen og de eksterne API'er. Dette, i kombination med datalink- og transportlagene, der benytter Ethernet og TCP/IP-protokollen og dermed sikrer en pålidelig datatransmission.
 
 ### Serverless Functions i Azure:
 Valget af serverless functions i Azure, specifikt Azure Functions (.Net 8.0/C#), baserer sig på deres evne til at levere individuelle funktioner uden behov for permanent infrastruktur. Dette giver mulighed for at skabe en skalerbar og omkostningseffektiv løsning.
