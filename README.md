@@ -12,7 +12,7 @@ Jeg vil forsøge at skabe en visualisering af mit elforbrug i forhold til spotpr
 Projektets teoretiske grundlag bygger på netværksteori og anvendelsen af serverless functions i Azure.
 
 ### Netværksteori:
-Netværksteorien udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTP/HTTPS-protokollen på applikationslaget muliggøres effektiv kommunikation mellem applikationen og eksterne API'er. Dette, i kombination med datalink- og transportlagene, der udnytter Ethernet og TCP-protokollen, sikrer pålidelig og sikker datatransmission.
+OSI-modellen udgør fundamentet for kommunikationen mellem applikationen og de eksterne API'er. Ved brug af HTTP/HTTPS-protokollen på applikationslaget muliggøres effektiv kommunikation mellem applikationen og de eksterne API'er. Dette, i kombination med datalink- og transportlagene, der udnytter Ethernet og TCP-protokollen og dermed sikrer pålidelig og sikker datatransmission.
 
 ### Serverless Functions i Azure:
 Valget af serverless functions i Azure, specifikt Azure Functions (.Net 8.0/C#), baserer sig på deres evne til at levere individuelle funktioner uden behov for permanent infrastruktur. Dette giver mulighed for at skabe en skalerbar og omkostningseffektiv løsning.
@@ -24,33 +24,9 @@ Min valgte løsning tager form af Azure Functions (.Net 8.0/C#), og en statisk w
 
 Produktet udvikles som en Proof of Concept (POC), og det vil danne grundlag for diskussioner om sikkerhed, dataopbevaring, performance og andre relevante emner under den mundtlige eksamination.
 
+#### Det endelige produkt findes på: https://blue-beach-0e39cba03.4.azurestaticapps.net
+
 ### Literaturliste
 1. https://energinet.dk/data-om-energi/datahub
 2. https://www.energidataservice.dk
 3. https://carbondesignsystem.com
-
-
-
-#########################
-
-
-
-
-
-
-
-# SmartLearning: Cloud-baseret opgave 
-
-## POC Visualisering af Mit Elforbrug
-
-Jeg har længe haft fokus på vores elforbrug i hjemmet, og på hvordan vi eventuelt kan optimere vores forbrug hen over døgnets 24 timer. Dette er ikke blevet mindre relevant efter vi har fået elbil og vores elforbrug derfor er steget betragteligt.
-
-Som eksamensopgave i faget Cloud, vil jeg derfor udvikle en serveless applikation, med det formål at indsamle og præsentere mit elforbrug.
-Dette gøres ved at kalde den åbne el-datahub, der udstiller Api'er for ens elfoprbrug (https://energinet.dk/data-om-energi/datahub), og kombinere disse med el-spotpriser fra Energinettet (energidataservice.dk).
-
-Løsningen bliver udviklet som Azure Functions (.Net 8.0/C#) med en statisk web-side opbygget af Web Components (https://carbondesignsystem.com/).
-
-Formålet er at visualisere forbrug i forhold til pris, og dermed skabe et muligt overblik omkring eventuelle uhensigtsmæssigheder i forbrug og/eller potentiale for bedre udnyttelse at pris kontra forbrug.
-Det er muligt at finde sit elforbrug hos sin eludbyder, men den er som regel ikke særlig specifik, og der er ikke nogle spotpriser for ens forbrug. 
-
-Produktet bliver udviklet som POC, og kan være et oplæg til diskussion i forhold til sikkerhed, opbevaring af date, performance mv. 
