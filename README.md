@@ -6,7 +6,7 @@ Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det 
 ## Problemformulering
 I forbindelse med min eksamensopgave inden for Cloud-faget har jeg besluttet mig for at udvikle en serverløs applikationc i Azure, med det formål at indsamle og præsentere data om mit elforbrug. 
 
-Med dette projekt er at skabe en visualisering af elforbruget i forhold til pris, med henblik på at identificere potentielle uhensigtsmæssigheder i forbrugsmønstre, og her af muligheder for at optimere vores elforbrug. Selvom det er muligt at finde elforbrugsdata hos ens eludbyder, er denne information normalt ikke tilstrækkelig specifik, og der er sjældent tilgængelige spotpriser for ens individuelle forbrug.
+Jeg vil forsøge at skabe en visualisering af mit elforbrug i forhold til spotpris, med henblik på at identificere potentielle uhensigtsmæssigheder i forbrugsmønstre, og her af muligheder for at optimere på vores elforbrug. 
 
 ## Teoretiske grundlag
 Projektets teoretiske grundlag bygger på netværksteori og anvendelsen af serverless functions i Azure.
