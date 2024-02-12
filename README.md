@@ -1,37 +1,6 @@
 # SmartLearning Cloud: POC Visualisering af Mit Elforbrug
 
 ## Indledning
-Fokus på hjemligt elforbrug, især efter indførelsen af en elbil, motiverer udviklingen af en serverløs applikation i Azure.
-
-## Problemformulering
-I Cloud-faget søger jeg med POC'en at indsamle og præsentere elforbrugsdata for at identificere og optimere forbrugsmønstre, især med henblik på at håndtere stigningen i elforbrug efter elbilanskaffelsen.
-
-## Teoretiske Grundlag
-Netværksteori og serverless functions i Azure vil muliggøre effektiv kommunikation og skalerbaritet. Anvendelse af HTTP/HTTPS-protokoller og Azure Functions støtter i udviklingen af POC'en.
-
-## Produkt
-POC'en anvender Azure Functions (.Net 8.0/C#) og Web Components til visualisering. Disse teknologier sikrer skalerbarhed og en brugervenlig grænseflade.
-
-## Literaturliste
-1. [Energinet - Åbne el-datahub](https://energinet.dk/data-om-energi/datahub)
-2. [Energidataservice - El-spotpriser](https://www.energidataservice.dk)
-3. [Carbon Design System](https://carbondesignsystem.com)
-
-
-
-
-
-
-
-
-########################################
-
-
-
-
-#SmartLearning Cloud: POC Visualisering af Mit Elforbrug
-
-## Indledning
 Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet, især efter vi har anskafet os en elbil, hvilket har resulteret i en markant stigning i vores elforbrug.
 
 ## Problemformulering
