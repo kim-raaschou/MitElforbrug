@@ -1,5 +1,7 @@
 # SmartLearning Cloud: POC Visualisering af Mit Elforbrug
 
+Velkommen til min disposition for faget Cloud på SmartLearning. Jeg håber du finder emnet intressant og implementeringen god.
+
 ## Indledning
 Med fokus på vores hjemlige elforbrug, søger jeg efter måder at optimere det i løbet af døgnet. Især efter, at vi har anskafet os en elbil, har vores daglige elforbrug ændret sig, og der kan være et potentiale i at have et overordnet overblik over vores forbrug og forbrugsmønstre.
 
