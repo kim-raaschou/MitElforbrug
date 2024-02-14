@@ -7,7 +7,7 @@ namespace MitElforbrug;
 /// </summary>
 public record EnerginetElsporprisRequest(DateOnly Start, DateOnly End, string PriceArea);
 
-public record EnerginetElsporprisRecordResponse(EnerginetElsporprisResponse[] Records);
+public record EnerginetElsporprisRecordResponse(EnerginetElspotprisResponse[] Records);
 
 /// <summary>
 /// SpotPriceDKK er prisen pr MWh. Divider med 1000 for KWh 
@@ -15,10 +15,13 @@ public record EnerginetElsporprisRecordResponse(EnerginetElsporprisResponse[] Re
 /// <see cref="https://www.energidataservice.dk/tso-electricity/Elspotprices#metadata-info"/>
 /// <param name="HourUTC"></param>
 /// <param name="SpotPriceDKK"></param>
-public record EnerginetElsporprisResponse(
+public record EnerginetElspotprisResponse(
     DateTime HourUTC,
-    decimal SpotPriceDKK
-);
+    decimal SpotPriceDKK,
+    decimal Tarrif = 0
+){
+    public decimal SamletPris => SpotPriceDKK + Tarrif;
+}
 
 public class EnerginetHttpClientBaseAddress : Uri
 {
@@ -30,7 +33,7 @@ public class EnerginetHttpClient(HttpClient httpClient)
 {
     private readonly HttpClient httpClient = httpClient;
 
-    public async Task<IEnumerable<EnerginetElsporprisResponse>> HentHistoriskeElspotpriser(EnerginetElsporprisRequest request)
+    public async Task<IEnumerable<EnerginetElspotprisResponse>> HentHistoriskeElspotpriser(EnerginetElsporprisRequest request)
     {
         string queryParams = await CreateQueryParams(request);
 
@@ -57,6 +60,6 @@ public class EnerginetHttpClient(HttpClient httpClient)
         return await formUrlEncodedContent.ReadAsStringAsync();
     }
 
-    private static EnerginetElsporprisResponse SportPrisMedPrisIKWh(EnerginetElsporprisResponse spotpris)
+    private static EnerginetElspotprisResponse SportPrisMedPrisIKWh(EnerginetElspotprisResponse spotpris)
         => spotpris with { SpotPriceDKK = spotpris.SpotPriceDKK / 1000 };
 }

@@ -22,7 +22,7 @@ public record VisElforbrugOgSpotpriserRequest(
 );
 
 public record VisElforbrugOgSpotpriserResponse(
-    EnerginetElsporprisResponse[] Elsporpriser,
+    EnerginetElspotprisResponse[] Elsporpriser,
     Måleraflæsning[] Elforbrug
 );
 
@@ -33,6 +33,7 @@ public record VisElforbrugOgSpotpriserHandler(
 {
     public async Task<VisElforbrugOgSpotpriserResponse> Handle(VisElforbrugOgSpotpriserRequest request)
     {
+
         var elspotpriserTask = EnerginetHttpClient.HentHistoriskeElspotpriser(
             request: new EnerginetElsporprisRequest(
                 Start: request.Start,
@@ -40,15 +41,25 @@ public record VisElforbrugOgSpotpriserHandler(
                 PriceArea: "DK1")
         );
 
+        var tarifferTask = EloverblikHttpClient.HentTariffer(request.Målepunkter.First());
+
         var elforbrugTask = EloverblikHttpClient.HentMåleraflæsninger(
-            request : new HentMåleraflæsningerRequest(
+            request: new HentMåleraflæsningerRequest(
                 FraDato: request.Start,
                 TilDato: request.End,
                 Målepunkter: request.Målepunkter)
         );
 
-        Task.WaitAll(elspotpriserTask, elforbrugTask);
-        var (elspotpriser, elforbrug) = (await elspotpriserTask, await elforbrugTask);
+        Task.WaitAll(elspotpriserTask, tarifferTask, elforbrugTask);
+        
+        var elspotpriser = await elspotpriserTask;
+        var tariffer = await tarifferTask;
+        var elforbrug = await elforbrugTask;
+
+        elspotpriser = elspotpriser.Select(spot => spot with
+        {
+            Tarrif = tariffer.GetValueOrDefault(TimeOnly.FromDateTime(spot.HourUTC))
+        });
 
         return new VisElforbrugOgSpotpriserResponse(
             Elsporpriser: [.. elspotpriser],

@@ -1,11 +1,14 @@
+using System.IO.Compression;
 using System.Net.Http.Json;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.Json;
 
 namespace MitElforbrug.Infrastructure;
 
-public class EloverblikHttpClientBaseAddress: Uri {
-    private const string uri = "https://api.eloverblik.dk/customerapi/api";  
-    public EloverblikHttpClientBaseAddress() : base(uri){ }
+public class EloverblikHttpClientBaseAddress : Uri
+{
+    private const string uri = "https://api.eloverblik.dk/customerapi/api";
+    public EloverblikHttpClientBaseAddress() : base(uri) { }
 }
 
 /// <summary>
@@ -30,6 +33,41 @@ public class EloverblikHttpClient(HttpClient httpClient)
             : throw new ApplicationException();
     }
 
+    public async Task<Dictionary<TimeOnly, decimal>> HentTariffer(string målepunktId)
+    {
+        var response = await httpClient.PostAsync(
+            requestUri: $"api/meteringpoints/meteringpoint/getcharges",
+            content: JsonContent.Create(new
+            {
+                MeteringPoints = new { MeteringPoint = new string[] { målepunktId } }
+            })
+        );
+
+        response.EnsureSuccessStatusCode();
+        var node = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+        var tarifferNodes = node.RootElement.GetProperty("result")[0]
+            .GetProperty("result")
+            .GetProperty("tariffs")
+            .EnumerateArray()
+            .Single(node => node.GetProperty("name").GetString() == "Nettarif C time")
+            .GetProperty("prices")
+            .EnumerateArray();
+
+        var tariffer = tarifferNodes.Select(node =>
+        {
+            return (
+                Tillæg: node.GetProperty("price").GetDecimal(),
+                Tidspunkt: new TimeOnly(
+                    hour: int.Parse(node.GetProperty("position").GetString()!) - 1,
+                    minute: 0
+                )
+            );
+        });
+
+        return tariffer.ToDictionary(key => key.Tidspunkt, key => key.Tillæg);
+    }
+
     public async Task<HentMåleraflæsningerResponse> HentMåleraflæsninger(HentMåleraflæsningerRequest request)
     {
         var (fraDato, tilDato, _) = request;
@@ -47,7 +85,7 @@ public class EloverblikHttpClient(HttpClient httpClient)
         var måleraflæsninger = ExtractPeriodNodes(node).SelectMany(periodNode =>
         {
             var period = JsonSerializer.Deserialize<Period>(
-                json: periodNode.GetRawText(), 
+                json: periodNode.GetRawText(),
                 options: serializerOptions
             );
 
@@ -71,3 +109,7 @@ public class EloverblikHttpClient(HttpClient httpClient)
                 .GetProperty("Period")
                 .EnumerateArray();
 }
+
+public record TarifResponse(Dictionary<TimeOnly, decimal> Tariffer);
+
+//public record Tarif(TimeOnly Tidspunkt, decimal Tillæg);
