@@ -14,8 +14,12 @@ public record HentMåleraflæsningerResponse(
 
 public record Måleraflæsning(
     DateTime Tidspunkt,     
-    decimal ForbrugKwh
-);
+    decimal ForbrugKwh,
+    decimal? SpotPriceDKK = null,
+    decimal? Tarrif = null
+){
+    public decimal? SamletPrisDKK => (SpotPriceDKK + Tarrif) * ForbrugKwh;
+}
 
 public record EloverblikResult<T>(T Result)
 {

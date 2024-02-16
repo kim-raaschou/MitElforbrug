@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Formats.Tar;
+using System.IO.Compression;
+using System.Net.WebSockets;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using MitElforbrug.Infrastructure;
@@ -51,7 +54,7 @@ public record VisElforbrugOgSpotpriserHandler(
         );
 
         Task.WaitAll(elspotpriserTask, tarifferTask, elforbrugTask);
-        
+
         var elspotpriser = await elspotpriserTask;
         var tariffer = await tarifferTask;
         var elforbrug = await elforbrugTask;
@@ -61,9 +64,21 @@ public record VisElforbrugOgSpotpriserHandler(
             Tarrif = tariffer.GetValueOrDefault(TimeOnly.FromDateTime(spot.HourUTC))
         });
 
+        var elspotpriser__ = (await elspotpriserTask).ToDictionary(key => key.HourUTC, value => value.SpotPriceDKK);
+
+        var elforbrug__ = elforbrug.Måleraflæsninger.Select(forbrug =>
+        {
+            var tariff = tariffer.GetValueOrDefault(TimeOnly.FromDateTime(forbrug.Tidspunkt));
+            var spotpris = elspotpriser__.GetValueOrDefault(forbrug.Tidspunkt)!;
+
+            return forbrug with { 
+                SpotPriceDKK = spotpris, 
+                Tarrif = tariff
+                };
+        });
         return new VisElforbrugOgSpotpriserResponse(
             Elsporpriser: [.. elspotpriser],
-            Elforbrug: [.. elforbrug.Måleraflæsninger]
+            Elforbrug: [.. elforbrug__]
         );
     }
 }
