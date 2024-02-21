@@ -96,10 +96,24 @@
                             stacked: true,
                             scaleType: 'linear',
                             mapsTo: 'value',
-                            title: 'Samlet pris i kr.',
-                            correspondingDatasets: ['elforbrug'],
-                            // domain: [0, 5],
+                            title: 'samlet pris DKK',
+                            correspondingDatasets: [
+                                'samletpris', 
+                                'spotpris', 
+                                'tarrif',
+                                'tarrifogspotpris'
+                            ],
+                            domain: [0, 10],
                         },
+                        right: {
+                            stacked: true,
+                            scaleType: 'linear',
+                            mapsTo: 'value',
+                            title: 'forbrug Kwh',
+                            correspondingDatasets: ['elforbrug'],
+                            domain: [0, 10],
+                        },
+                        
                         bottom: {
                             scaleType: 'time',
                             mapsTo: 'date'
@@ -123,18 +137,28 @@
                 const data = [
                     ...elforbrug.map(elforbrug => ({
                         date: new Date(elforbrug.tidspunkt),
-                        value: elforbrug.samletPrisDKK,
+                        value: elforbrug.forbrugKwh,
                         group: 'elforbrug'
                     })),
                     ...elforbrug.map(elforbrug => ({
                         date: new Date(elforbrug.tidspunkt),
-                        value: elforbrug.spotPriceDKK,
+                        value: elforbrug.spotprisDKK,
                         group: 'spotpris'
                     })),
                     ...elforbrug.map(elforbrug => ({
                         date: new Date(elforbrug.tidspunkt),
-                        value: elforbrug.tarrif,
+                        value: elforbrug.tarrifDKK,
                         group: 'tarrif'
+                    })),
+                    ...elforbrug.map(elforbrug => ({
+                        date: new Date(elforbrug.tidspunkt),
+                        value: elforbrug.tarrifDKK + elforbrug.spotprisDKK,
+                        group: 'tarrifogspotpris'
+                    })),
+                    ...elforbrug.map(elforbrug => ({
+                        date: new Date(elforbrug.tidspunkt),
+                        value: elforbrug.samletPrisDKK,
+                        group: 'samletpris'
                     }))
                 ];
 

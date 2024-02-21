@@ -19,7 +19,8 @@ public record EnerginetElspotprisResponse(
     DateTime HourUTC,
     decimal SpotPriceDKK,
     decimal Tarrif = 0
-){
+)
+{
     public decimal SamletPris => SpotPriceDKK + Tarrif;
 }
 
@@ -33,7 +34,7 @@ public class EnerginetHttpClient(HttpClient httpClient)
 {
     private readonly HttpClient httpClient = httpClient;
 
-    public async Task<IEnumerable<EnerginetElspotprisResponse>> HentHistoriskeElspotpriser(EnerginetElsporprisRequest request)
+    public async Task<Dictionary<DateTime, decimal>> HentHistoriskeElspotpriser(EnerginetElsporprisRequest request)
     {
         string queryParams = await CreateQueryParams(request);
 
@@ -43,7 +44,10 @@ public class EnerginetHttpClient(HttpClient httpClient)
 
         return response is null || response.Records.Length < 1
             ? throw new ApplicationException()
-            : response.Records.Select(SportPrisMedPrisIKWh);
+            : response.Records.ToDictionary(key => key.HourUTC, SportprisIKWh);
+
+        decimal SportprisIKWh(EnerginetElspotprisResponse spotpris)
+            => spotpris.SpotPriceDKK / 1000;
     }
 
     private static async Task<string> CreateQueryParams(EnerginetElsporprisRequest request)
@@ -59,7 +63,4 @@ public class EnerginetHttpClient(HttpClient httpClient)
 
         return await formUrlEncodedContent.ReadAsStringAsync();
     }
-
-    private static EnerginetElspotprisResponse SportPrisMedPrisIKWh(EnerginetElspotprisResponse spotpris)
-        => spotpris with { SpotPriceDKK = spotpris.SpotPriceDKK / 1000 };
 }
